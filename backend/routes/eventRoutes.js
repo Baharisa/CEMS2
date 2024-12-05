@@ -7,12 +7,11 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM events');
-        // Ensure the returned events have the expected structure
         const events = result.rows.map(event => ({
-            id: event.id, // Ensure you're returning the correct ID
-            title: event.name, // Assuming 'name' is the title of the event
-            date: event.date, // Assuming 'date' is already in the correct format
-            description: event.description // Optional, include if needed
+            id: event.id,
+            title: event.name,
+            date: event.date,
+            description: event.description
         }));
         res.status(200).json(events);
     } catch (error) {
@@ -21,28 +20,47 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Create a new event
-router.post('/', async (req, res) => {
-    const { name, date, description } = req.body;
-
-    if (!name || !date || !description) {
-        return res.status(400).json({ error: 'Missing event details' });
-    }
-
+// Fetch total events count
+router.get('/total-events', async (req, res) => {
     try {
-        const result = await pool.query(
-            'INSERT INTO events (name, date, description) VALUES ($1, $2, $3) RETURNING *',
-            [name, date, description]
-        );
-        res.status(201).json({
-            id: result.rows[0].id, // Ensure the ID is returned
-            title: result.rows[0].name,
-            date: result.rows[0].date,
-            description: result.rows[0].description
-        });
+        const result = await pool.query('SELECT COUNT(*) FROM events');
+        res.status(200).json({ totalEvents: result.rows[0].count });
     } catch (error) {
-        console.error('Error creating event:', error);
-        res.status(500).json({ error: 'Failed to create event' });
+        console.error('Error fetching total events:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Fetch upcoming events count
+router.get('/upcoming-events', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT COUNT(*) FROM events WHERE date > NOW()');
+        res.status(200).json({ upcomingEvents: result.rows[0].count });
+    } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Fetch past events count
+router.get('/past-events', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT COUNT(*) FROM events WHERE date < NOW()');
+        res.status(200).json({ pastEvents: result.rows[0].count });
+    } catch (error) {
+        console.error('Error fetching past events:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Fetch total registrations count
+router.get('/total-registrations', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT COUNT(*) FROM registrations');
+        res.status(200).json({ totalRegistrations: result.rows[0].count });
+    } catch (error) {
+        console.error('Error fetching total registrations:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
@@ -55,7 +73,6 @@ router.post('/register', async (req, res) => {
     }
 
     try {
-        // Assuming you have a registrations table to record user registrations
         const result = await pool.query(
             'INSERT INTO registrations (event_id, user_name, user_email) VALUES ($1, $2, $3) RETURNING *',
             [eventId, user.userName, user.userEmail]

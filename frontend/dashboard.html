@@ -78,6 +78,45 @@
         .button:hover {
             background-color: #e64a19;
         }
+
+        /* Enhanced styling for recent activities */
+        #activity-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #activity-list li {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+        }
+
+        #activity-list li:hover {
+            background-color: #e1f5fe;
+        }
+
+        #activity-list li strong {
+            font-weight: bold;
+            color: #1a73e8;
+        }
+
+        .action {
+            color: #ff5722;
+            font-weight: bold;
+        }
+
+        .date {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        #activity-list li span {
+            margin-left: 5px;
+        }
     </style>
 </head>
 
@@ -98,7 +137,6 @@
                 </li>
                 <li><a href="feedback.html">Feedback</a></li>
                 <li><a href="profile.html">Profile</a></li>
-                 
             </ul>
         </nav>
     </header>
@@ -110,7 +148,14 @@
             <p><strong>Upcoming Events:</strong> <span id="upcoming-events">0</span></p>
             <p><strong>Past Events:</strong> <span id="past-events">0</span></p>
             <p><strong>Total Registrations:</strong> <span id="total-registrations">0</span></p>
-            <button class="button" onclick="loadDashboardData()">Refresh Data</button>
+            <!-- Added an ID to the button to trigger the data refresh -->
+            <button class="button" id="refreshButton">Refresh Data</button>
+        </div>
+
+        <!-- Chart.js Pie Chart for Event Statistics -->
+        <div class="card">
+            <h2>Event Statistics Chart</h2>
+            <canvas id="eventChart" width="400" height="400"></canvas>
         </div>
 
         <div class="card">
@@ -131,7 +176,86 @@
         <p>&copy; 2024 Campus Event Management System. All Rights Reserved.</p>
     </footer>
 
+    <!-- Add Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="js/dashboard.js" type="module"></script>
+
+    <script>
+        // JavaScript to fetch data from the backend and update the dashboard dynamically
+        async function loadDashboardData() {
+            try {
+                // Fetch statistics for the dashboard
+                const statsResponse = await fetch('/api/dashboard/statistics');
+                const activitiesResponse = await fetch('/api/dashboard/recent-activities');
+
+                const statsData = await statsResponse.json();
+                const activitiesData = await activitiesResponse.json();
+
+                // Update the statistics on the dashboard
+                document.getElementById('total-events').textContent = statsData.totalEvents;
+                document.getElementById('upcoming-events').textContent = statsData.upcomingEvents;
+                document.getElementById('past-events').textContent = statsData.pastEvents;
+                document.getElementById('total-registrations').textContent = statsData.totalRegistrations;
+
+                // Update recent activities
+                const activityList = document.getElementById('activity-list');
+                activityList.innerHTML = ''; // Clear existing list
+                if (activitiesData.recentActivities.length > 0) {
+                    activitiesData.recentActivities.forEach(activity => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${activity.user_name}</strong> performed action "<span class="action">${activity.action}</span>" on <span class="date">${new Date(activity.created_at).toLocaleString()}</span>`;
+                        activityList.appendChild(li);
+                    });
+                } else {
+                    activityList.innerHTML = '<li>No recent activities</li>';
+                }
+
+                // Create a pie chart for event statistics
+                const ctx = document.getElementById('eventChart').getContext('2d');
+                const eventChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Upcoming Events', 'Past Events'],
+                        datasets: [{
+                            label: 'Event Distribution',
+                            data: [statsData.upcomingEvents, statsData.pastEvents],
+                            backgroundColor: ['#ff5722', '#1a73e8'],
+                            borderColor: ['#fff', '#fff'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw + ' events';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Load data when the page is loaded
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+
+        // Attach the "Refresh Data" button event listener
+        const refreshButton = document.getElementById('refreshButton');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', loadDashboardData);
+        }
+    </script>
 </body>
 
 </html>
