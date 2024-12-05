@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Event - CEMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+        }
+
+        header {
+            background-color: #1a73e8;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #1a73e8;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #155a8a;
+        }
+
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Create New Event</h1>
+    </header>
+
+    <div class="container">
+        <h2>Event Details</h2>
+        <form id="createEventForm">
+            <label for="title">Event Title:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="date">Event Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="description">Event Description:</label>
+            <textarea id="description" name="description" rows="5" required></textarea>
+
+            <button type="submit">Create Event</button>
+        </form>
+        <div id="message" class="success-message" style="display:none;">Event created successfully!</div>
+        <div id="error" class="error-message" style="display:none;">Failed to create event. Please try again.</div>
+    </div>
+
+    <script type="module">
+        document.getElementById('createEventForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/events', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, date, description }),
+                });
+
+                if (response.ok) {
+                    document.getElementById('message').style.display = 'block';
+                    document.getElementById('error').style.display = 'none';
+                    document.getElementById('createEventForm').reset();
+                } else {
+                    document.getElementById('message').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error creating event:', error);
+                document.getElementById('message').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

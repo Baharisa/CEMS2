@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CEMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Styles are kept intact and improved */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f4f8;
+        }
+
+        header, footer {
+            background-color: #1a73e8;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header h1, footer p {
+            margin: 0;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1 1 300px;
+        }
+
+        h2 {
+            color: #1a73e8;
+        }
+
+        .button {
+            background-color: #ff5722;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #e64a19;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Campus Event Management System (CEMS)</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="calendar.html">Calendar</a></li>
+                <li class="dropdown">
+                    <a href="events.html">Events</a>
+                    <div class="dropdown-content">
+                        <a href="event-listing.html">Upcoming Events</a>
+                        <a href="past-events.html">Past Events</a>
+                    </div>
+                </li>
+                <li><a href="feedback.html">Feedback</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                 
+            </ul>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <div class="card">
+            <h2>Event Statistics</h2>
+            <p><strong>Total Events:</strong> <span id="total-events">0</span></p>
+            <p><strong>Upcoming Events:</strong> <span id="upcoming-events">0</span></p>
+            <p><strong>Past Events:</strong> <span id="past-events">0</span></p>
+            <p><strong>Total Registrations:</strong> <span id="total-registrations">0</span></p>
+            <button class="button" onclick="loadDashboardData()">Refresh Data</button>
+        </div>
+
+        <div class="card">
+            <h2>Recent Activities</h2>
+            <ul id="activity-list">
+                <li>No recent activities</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Manage Events</h2>
+            <button class="button" onclick="window.location.href='create-event.html'">Create New Event</button>
+            <button class="button" onclick="window.location.href='event-listing.html'">View All Events</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Campus Event Management System. All Rights Reserved.</p>
+    </footer>
+
+    <script src="js/dashboard.js" type="module"></script>
+</body>
+
+</html>

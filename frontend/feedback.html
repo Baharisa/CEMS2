@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - CEMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/feedback.js" defer></script>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+        }
+
+        nav {
+            background-color: #333;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        nav ul li {
+            position: relative;
+        }
+
+        nav ul li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #1a73e8;
+            color: white;
+            padding: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .feedback-intro,
+        .feedback-form {
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .feedback-form label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .feedback-form input,
+        .feedback-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .rating span {
+            cursor: pointer;
+            font-size: 24px;
+            color: #ffd700; /* Gold color for stars */
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #155a8a;
+        }
+
+        #confirmation {
+            margin-top: 20px;
+            display: none; /* Hidden by default */
+        }
+
+        footer {
+            background-color: #1a73e8;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="calendar.html">Calendar</a></li>
+            <li class="dropdown">
+                <a href="events.html">Events</a>
+                <div class="dropdown-content">
+                    <a href="event-listing.html">Upcoming Events</a>
+                    <a href="past-events.html">Past Events</a>
+                </div>
+            </li>
+            <li><a href="feedback.html">Feedback</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Feedback</h1>
+    </header>
+
+    <main>
+        <section class="feedback-intro">
+            <h2>Your Feedback Matters!</h2>
+            <p>We value your opinions and suggestions. Please share your thoughts to help us improve our services and create better events for everyone.</p>
+        </section>
+
+        <section class="feedback-form">
+            <h3>Share Your Experience</h3>
+            <form id="feedbackForm">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="rating">Rate Your Experience:</label>
+                <div class="rating" id="rating">
+                    <span data-value="1">★</span>
+                    <span data-value="2">★</span>
+                    <span data-value="3">★</span>
+                    <span data-value="4">★</span>
+                    <span data-value="5">★</span>
+                </div>
+
+                <label for="feedback">Your Feedback:</label>
+                <textarea id="feedback" name="feedback" rows="5" required></textarea>
+
+                <button type="submit">Submit Feedback</button>
+            </form>
+            <div id="confirmation">
+                <p>Thank you for your feedback! We appreciate your input and are committed to improving your experience.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CEMS. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Handle form submission
+        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            // Simulate form submission (you can replace this with an actual API call)
+            document.getElementById('confirmation').style.display = 'block';
+            this.reset(); // Reset the form fields
+        });
+
+        // Handle rating selection
+        const ratingStars = document.querySelectorAll('.rating span');
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const ratingValue = this.getAttribute('data-value');
+                // Highlight selected stars
+                ratingStars.forEach(s => {
+                    s.style.color = s.getAttribute('data-value') <= ratingValue ? '#ffd700' : '#ccc'; // Change color based on rating
+                });
+            });
+        });
+    </script>
+</body>
+</html>

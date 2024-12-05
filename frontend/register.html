@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for an Event - CEMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #1a73e8;
+            color: white;
+            padding: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #155a8a;
+        }
+
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Register for an Event</h1>
+    </header>
+
+    <div class="container">
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Your Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="event">Select Event:</label>
+                <select id="event" name="event" required>
+                    <option value="">Loading events...</option>
+                </select>
+            </div>
+
+            <button id="submitButton" type="submit">Register</button>
+        </form>
+
+        <div id="message" aria-live="polite"></div>
+    </div>
+
+    <script>
+        async function fetchEvents() {
+            const response = await fetch('http://localhost:3000/api/events');
+            if (!response.ok) throw new Error('Failed to fetch events');
+            return await response.json();
+        }
+
+        async function registerForEvent(eventId, user) {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:3000/api/events/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ eventId, user }),
+            });
+            if (!response.ok) throw new Error('Failed to register for event');
+            return await response.json();
+        }
+
+        async function loadEvents() {
+            const eventSelect = document.getElementById('event');
+            try {
+                const events = await fetchEvents();
+                if (events.length > 0) {
+                    eventSelect.innerHTML = events.map(event =>
+                        `<option value="${event.id}">${event.title} - ${new Date(event.date).toLocaleString()}</option>`
+                    ).join('');
+                } else {
+                    eventSelect.innerHTML = '<option value="">No events available</option>';
+                }
+            } catch (error) {
+                eventSelect.innerHTML = '<option value="">Failed to load events</option>';
+                console.error('Error loading events:', error);
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('message');
+            const submitButton = document.getElementById('submitButton');
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const eventId = document.getElementById('event').value;
+
+            if (!eventId) {
+                messageDiv.textContent = 'Please select an event to register.';
+                messageDiv.style.color = 'red';
+                return;
+            }
+
+            submitButton.disabled = true;
+            messageDiv.textContent = 'Processing your registration...';
+            messageDiv.style.color = 'blue';
+
+            try {
+                const response = await registerForEvent(eventId, { userName: name, userEmail: email });
+                messageDiv.textContent = 'Successfully registered for the event!';
+                messageDiv.style.color = 'green';
+                document.getElementById('registerForm').reset();
+            } catch (error) {
+                messageDiv.textContent = 'Failed to register. Please try again.';
+                messageDiv.style.color = 'red';
+                console.error('Error registering:', error);
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+
+        // Load events when the page is loaded
+        loadEvents();
+    </script>
+</body>
+</html>
