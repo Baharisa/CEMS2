@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const pool = require('./config/db'); // Import the database connection
+const pool = require('./config/db'); // Import database connection
 const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const userRoutes = require('./routes/userRoutes'); // Import user routes
-const path = require('path');  // Add this line
+const path = require('path');  // Required to serve static files and set up file paths
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +20,9 @@ app.use(express.json()); // For parsing JSON bodies
 
 // Serve static files (HTML, CSS, JS) from the 'frontend' folder
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
+
+// Update the path to ensure it points to the correct 'frontend' directory
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 // Test DB connection
 pool.connect()

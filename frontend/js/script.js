@@ -105,6 +105,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
+
+    // Add event listener to "Refresh Data" button
+    const refreshButton = document.getElementById('refreshDataButton');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', () => {
+            // Refresh events by calling the displayEvents function
+            displayEvents();
+        });
+    }
 });
 
 // Handle login functionality

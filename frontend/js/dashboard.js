@@ -5,14 +5,17 @@ async function loadDashboardData() {
         const statsResponse = await fetch('/api/dashboard/statistics');
         const activitiesResponse = await fetch('/api/dashboard/recent-activities');
 
+
         const statsData = await statsResponse.json();
         const activitiesData = await activitiesResponse.json();
+
 
         // Update the statistics on the dashboard
         document.getElementById('total-events').textContent = statsData.totalEvents;
         document.getElementById('upcoming-events').textContent = statsData.upcomingEvents;
         document.getElementById('past-events').textContent = statsData.pastEvents;
         document.getElementById('total-registrations').textContent = statsData.totalRegistrations;
+
 
         // Update recent activities
         const activityList = document.getElementById('activity-list');
@@ -26,6 +29,7 @@ async function loadDashboardData() {
         } else {
             activityList.innerHTML = '<li>No recent activities</li>';
         }
+
 
         // Create a pie chart for event statistics
         const ctx = document.getElementById('eventChart').getContext('2d');
@@ -58,16 +62,22 @@ async function loadDashboardData() {
             }
         });
 
+
     } catch (error) {
         console.error('Error loading dashboard data:', error);
     }
 }
 
+
 // Load data when the page is loaded
 document.addEventListener('DOMContentLoaded', loadDashboardData);
+
 
 // Attach the "Refresh Data" button event listener
 const refreshButton = document.getElementById('refreshButton');
 if (refreshButton) {
     refreshButton.addEventListener('click', loadDashboardData);
 }
+
+
+

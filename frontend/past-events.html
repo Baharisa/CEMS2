@@ -71,6 +71,7 @@
     <header>
         <h1>Past Events</h1>
     </header>
+
     <div class="container">
         <div class="carousel" id="past-events-carousel">
             <p>Loading past events...</p>
@@ -80,6 +81,7 @@
             <button class="carousel-button" onclick="scrollCarousel(1)">Next ❯</button>
         </div>
     </div>
+
     <footer>
         <p>&copy; 2024 Campus Event Management System</p>
     </footer>
@@ -88,17 +90,27 @@
         async function fetchPastEvents() {
             const carousel = document.getElementById('past-events-carousel');
             try {
-                const response = await fetch('http://localhost:3000/api/events/past'); // Adjust this endpoint as needed
+                // Fetch events from the backend
+                const response = await fetch('http://localhost:3000/api/events/past'); // Ensure this is correct
                 const events = await response.json();
 
                 carousel.innerHTML = '';
                 events.forEach(event => {
+                    // Format the date to a readable format
+                    const eventDate = new Date(event.date);  // Convert the date string to Date object
+                    const formattedDate = eventDate.toLocaleDateString('en-US', {  // Format the date
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    });
+
+                    // Create a carousel item for each event
                     const eventItem = document.createElement('div');
                     eventItem.className = 'carousel-item';
                     eventItem.innerHTML = `
                         <img src="images/${event.image}" alt="${event.title}">
                         <h3>${event.title}</h3>
-                        <p class="date">${new Date(event.event_date).toLocaleString()}</p>
+                        <p class="date">${formattedDate}</p>  <!-- Use the formatted date -->
                         <p>${event.description}</p>
                         <p><strong>Location:</strong> ${event.location}</p>
                     `;
@@ -110,12 +122,14 @@
             }
         }
 
+        // Scroll carousel function for previous and next buttons
         function scrollCarousel(direction) {
             const carousel = document.getElementById('past-events-carousel');
             const scrollAmount = 320; // Adjust based on item width + gap
             carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
         }
 
+        // Load past events when the page is loaded
         fetchPastEvents();
     </script>
 </body>
